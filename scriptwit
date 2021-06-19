@@ -1,0 +1,35 @@
+# Make sure tweepy is imported
+import tweepy, time
+
+# Authentication
+auth = tweepy.OAuthHandler("CONSUMER_KEY_1", "CONSUMER_KEY_2")
+auth.set_access_token("AUTH_KEY_1", "AUTH_KEY_2")
+
+api = tweepy.API(auth)
+
+try:
+    api.verify_credentials()
+    print("Authentication OK")
+except:
+    print("Error during authentication")
+
+# Setup
+# Side note: regex for script: (?<!\bMr|\bMs|\bMrs!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?|\!)\s
+fileName = input("Please enter the name of the file: ")
+lineNumber = int(input("Please enter the line number (0 for beginning): "))
+interval = int(input("Please enter the interval between tweets in seconds (one hour = 3600): "))
+
+# Condense script file into list
+with open(fileName) as f:
+    scriptLines = f.readlines()
+    f.close()
+
+# Tweet line, increment, wait one hour
+while lineNumber < len(scriptLines):
+    print("Tweeting line number", str(lineNumber) + ": " + scriptLines[lineNumber])
+    api.status_update(scriptLines[lineNumber])
+    lineNumber += 1
+    time.sleep(interval)
+
+print("Finished")
+api.update_status("The entire script has been tweeted!")
